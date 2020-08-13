@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using domain.common;
@@ -24,13 +24,13 @@ namespace domain.account
 
         private readonly InnerEventListener eventProcessor;
 
-        private readonly string id;
+        private string id;
 
-        private readonly int version;
+        private int version;
 
         private EventStore eventStore;
 
-        private readonly int creditBalance;
+        private int creditBalance;
 
         private readonly Dictionary<string, TransferRequested> pendingTransfers;
 
@@ -62,36 +62,28 @@ namespace domain.account
         /* Decision Function */
         private void RegisterBankAccount(string bankAccountId)
         {
-            throw new NotImplementedException();
-            /*
-              1. instantiate a BankAccountRegistered event
-              2. save the event List<Event> savedEvents = eventStore.save(events)
-              3. apply saved events on the bank account savedEvents.foreach(this::applyEvent)
-            */
+            var bankAccountRegisteredEvent = new BankAccountRegistered(bankAccountId);
+            eventStore.Save(this.version, bankAccountRegisteredEvent).ForEach(this.ApplyEvent);
         }
 
         /* Decision Function */
         public void ProvisionCredit(int creditToProvision)
         {
-            throw new NotImplementedException();
-            /*
-              1. instantiate a CreditProvisioned event
-              2. save the event List<Event> savedEvents = eventStore.save(events)
-              3. apply saved events on the bank account savedEvents.foreach(this::applyEvent)
-            */
+            var creditProvisionedEvent = new CreditProvisioned(this.id, this.creditBalance + creditToProvision, creditToProvision);
+            eventStore.Save(this.version, creditProvisionedEvent).ForEach(this.ApplyEvent);
         }
 
         /* Decision Function */
         public void WithdrawCredit(int creditToWithdraw)
         {
-            throw new NotImplementedException();
-            // /!\ creditToWithdraw represent a positive value
-            /*
-              1. throw an InvalidCommandException if the balance is lower then the credit amount to withdraw
-              2. instantiate a CreditWithdrawn event
-              3. save the event List<Event> savedEvents = eventStore.save(events)
-              4. apply saved events on the bank account savedEvents.foreach(this::applyEvent)
-             */
+            int newCreditBalance = creditBalance - creditToWithdraw;
+            if (newCreditBalance < 0)
+            {
+                throw new Exception("It is not possible to withdraw more money than you have");
+            }
+
+            eventStore.Save(version, new CreditWithdrawn(id, newCreditBalance, creditToWithdraw))
+                      .ForEach(this.ApplyEvent);
         }
 
         /* Decision Function */
@@ -171,16 +163,14 @@ namespace domain.account
 
             public void On(BankAccountRegistered bankAccountRegistered)
             {
-                throw new NotImplementedException();
-                /*
-                  1. affect the event's aggregate id to the bank account's id
-                  2. increment the aggregate's version
-                 */
+                bankAccount.id = bankAccountRegistered.AggregateId;
+                bankAccount.version++;
             }
 
             public void On(CreditProvisioned creditProvisioned)
             {
-                throw new NotImplementedException();
+                bankAccount.creditBalance = creditProvisioned.NewCreditBalance;
+                bankAccount.version++;
                 /*
                   1. affect the event's new credit balance to the bank account's balance
                   2. increment the aggregate's version
@@ -189,11 +179,8 @@ namespace domain.account
 
             public void On(CreditWithdrawn creditWithdrawn)
             {
-                throw new NotImplementedException();
-                /*
-                  1. affect the event's new credit balance to the bank account's balance
-                  2. increment the aggregate's version
-                 */
+                bankAccount.creditBalance = creditWithdrawn.NewCreditBalance;
+                bankAccount.version++;
             }
 
             public void On(TransferRequested transferRequested)

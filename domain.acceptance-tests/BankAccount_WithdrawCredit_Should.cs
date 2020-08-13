@@ -30,10 +30,10 @@ namespace domain.acceptance_tests
             bankAccount.WithdrawCredit(1);
 
             // Then
-            Check.That(eventStore.Load("bankAccountId")).ContainsExactly(new BankAccountRegistered("bankAccountId"),
+            var events = eventStore.Load("bankAccountId");
+            Check.That(events).ContainsExactly(new BankAccountRegistered("bankAccountId"),
                 new CreditProvisioned("bankAccountId", 1, 1),
-                new CreditWithdrawn("bankAccountId", 1, 0));
-
+                new CreditWithdrawn("bankAccountId", 0, 1));
             Check.That(bankAccount).IsEqualTo(new BankAccount("bankAccountId", eventStore, 0, 3));
         }
     }
