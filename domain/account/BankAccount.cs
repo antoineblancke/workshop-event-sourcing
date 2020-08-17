@@ -90,15 +90,21 @@ namespace domain.account
         /* Decision Function */
         public string RequestTransfer(string bankAccountDestinationId, int creditToTransfer)
         {
-            throw new NotImplementedException();
-            /*
-              1. throw an InvalidCommandException if the bank destination id is the same that this id
-              2. throw an InvalidCommandException if the balance is lower then the credit amount to transfer
-              3. instantiate a TransferRequest event (you can generate a random transfer id by calling UUID.randomUUID)
-              4. save the event List<Event> savedEvents = eventStore.save(events)
-              5. apply saved events on the bank account savedEvents.foreach(this::applyEvent)
-              6. return the transfer id associated the the transfer
-            */
+            if (this.id == bankAccountDestinationId)
+            {
+                throw new Exception("same id");
+            }
+
+            if (creditToTransfer > this.creditBalance)
+            {
+                throw new Exception("not enough money");
+            }
+
+            var transferId = Guid.NewGuid().ToString();
+            eventStore.Save(this.version,
+                new TransferRequested(this.id, bankAccountDestinationId, transferId,
+                    this.creditBalance - creditToTransfer, creditToTransfer)).ForEach(this.ApplyEvent);
+            return transferId;
         }
 
         /* Decision Function */
@@ -116,8 +122,10 @@ namespace domain.account
         public void CompleteTransfer(string transferId)
         {
             TransferRequested transferRequested = pendingTransfers[transferId];
-            if (transferRequested == null) {
-                throw new Exception($"transfer designed by id {transferId} has not been requested or was already completed");
+            if (transferRequested == null)
+            {
+                throw new Exception(
+                    $"transfer designed by id {transferId} has not been requested or was already completed");
             }
 
             eventStore.Save(version, new TransferCompleted(id,
@@ -201,12 +209,9 @@ namespace domain.account
 
             public void On(TransferRequested transferRequested)
             {
-                throw new NotImplementedException();
-                /*
-                  1. affect the event's new credit balance to the bank account's balance
-                  2. add the event to the pending transfers map
-                  3. increment the aggregate's version
-                 */
+                bankAccount.creditBalance = transferRequested.NewCreditBalance;
+                bankAccount.pendingTransfers.Add(transferRequested.TransferId, transferRequested);
+                bankAccount.version++;
             }
 
             public void On(TransferReceived transferReceived)
@@ -227,6 +232,11 @@ namespace domain.account
                 bankAccount.creditBalance = transferCanceled.NewCreditBalance;
                 bankAccount.version++;
             }
+        }
+
+        public bool IsNull()
+        {
+            return this.eventStore == null;
         }
     }
 }

@@ -37,10 +37,12 @@ namespace domain.acceptance_tests
             // Then
             var events = eventStore.Load("bankAccountOriginId");
             Check.That(events).ContainsExactly(new BankAccountRegistered("bankAccountOriginId"),
-                new TransferRequested("bankAccountOriginId", transferId,
+                new CreditProvisioned("bankAccountOriginId", 1, 1),
+                new TransferRequested("bankAccountOriginId", 
                     "bankAccountDestinationId",
-                    1,
-                    0),
+                    transferId,
+                    0,
+                    1),
                 new TransferCompleted("bankAccountOriginId",
                     transferId,
                     "bankAccountDestinationId"));
@@ -60,6 +62,7 @@ namespace domain.acceptance_tests
             bankAccountOrigin.CompleteTransfer(transferId);
 
             // When
+            // Then
             Check.ThatCode(() => bankAccountOrigin.CompleteTransfer(transferId)).Throws<Exception>();
         }
     }

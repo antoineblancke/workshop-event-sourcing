@@ -1,12 +1,12 @@
 ﻿using System;
 using domain.common;
+using static domain.account.BankAccount;
 
 namespace domain.account
 {
     public class TransferProcessManager : IProcessManager
     {
         private readonly EventStore eventStore;
-
 
         public TransferProcessManager(EventStore eventStore)
         {
@@ -26,28 +26,38 @@ namespace domain.account
 
         public void On(TransferRequested transferRequested)
         {
-            throw new NotImplementedException();
-            /*
-              1. load the transfer destination bank account (BankAccount.loadBankAccount(...))
-              2. if the account exists, send a command to have it receive the transfer
-              3. if it does not exist, load the transfer origin account and send a command to cancel the transfer
-              4. if the origin account does not exist, or if any exception is thrown by any command, log an error
-             */
+            var destinationBankAccount = LoadBankAccount(transferRequested.BankAccountDestinationId, this.eventStore);
+
+            if (!destinationBankAccount.IsNull())
+            {
+                destinationBankAccount.ReceiveTransfer(transferRequested.AggregateId, transferRequested.TransferId, transferRequested.CreditTransferred);
+                return;
+            }
+            
+            var originBankAccount = LoadBankAccount(transferRequested.AggregateId, this.eventStore);
+
+            if (originBankAccount.IsNull())
+            {
+                throw new Exception("origin account does not exist");
+            }
+            
+            originBankAccount.CancelTransfer(transferRequested.TransferId);
         }
 
         public void On(TransferReceived transferReceived)
         {
-            throw new NotImplementedException();
-            /*
-              1. load the transfer origin bank account
-              2. if the account exists, send a command to complete the transfer
-              3. if the account does not exist, or if any exception is thrown by any command, log an error
-             */
+            var originBankAccount = LoadBankAccount(transferReceived.BankAccountOriginId, eventStore);
+
+            if (originBankAccount.IsNull())
+            {
+                throw new Exception("origin account does not exist");
+            }
+            
+            originBankAccount.CompleteTransfer(transferReceived.TransferId);
         }
 
         public void On(TransferCompleted transferCompleted)
         {
-            throw new NotImplementedException();
             /*
               TransferCompleted event is ignored by the transfer process manager
              */
@@ -55,7 +65,6 @@ namespace domain.account
 
         public void On(TransferCanceled transferCanceled)
         {
-            throw new NotImplementedException();
             /*
               TransferCanceled event is ignored by the transfer process manager
              */

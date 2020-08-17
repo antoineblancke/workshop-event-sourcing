@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Threading;
+using domain.account;
+using NFluent;
+using static domain.account.BankAccount;
 using Xunit;
 
 namespace domain.acceptance_tests
@@ -8,49 +12,57 @@ namespace domain.acceptance_tests
         [Fact]
         public void cancel_transfer_when_destination_does_not_exist()
         {
-            throw new NotImplementedException();
             // Given
-            /*
-              1. a transfer process manager registered with the event bus (the event bus is accessible from the superclass)
-              2. a registration of the process manager into the event bus (super.eventBus.register(...))
-              3. a bank account ("origin") registered and provisioned with 1 credit
-             */
+            var transferProcessManager = new TransferProcessManager(this.eventStore);
+            this.eventBus.Register(transferProcessManager);
+            var bankAccount = RegisterBankAccount("bankAccountId", eventStore);
+            bankAccount.ProvisionCredit(1);
 
             // When
-            /*
-              when a transfer is initialized from "origin" to a non registered bank account id
-             */
+            var transferId = bankAccount.RequestTransfer("bankAccountDestinationId", 1);
 
             // Then
-            /*
-              1. Wait for the event bus to process events
-              2. "origin" events should contains exactly 1 BankAccountRegistered, 1 CreditProvisioned, 1 TransferRequested and 1 TransferCanceled
-             */
+            Thread.Sleep(500);
+            var events = eventStore.Load("bankAccountId");
+            Check.That(events).ContainsExactly(new BankAccountRegistered("bankAccountId"),
+                new CreditProvisioned("bankAccountId", 1, 1),
+                new TransferRequested("bankAccountId",
+                    "bankAccountDestinationId",
+                    transferId,
+                    0,
+                    1),
+                new TransferCanceled("bankAccountId",
+                    transferId,
+                    "bankAccountDestinationId",
+                    1,
+                    1));
         }
 
         [Fact]
         public void complete_transfer_when_destination_exist()
         {
-            throw new NotImplementedException();
             // Given
-            /*
-              1. a transfer process manager registered with the event bus (the event bus is accessible from the superclass)
-              2. a registration of the process manager into the event bus (super.eventBus.register(...))
-              3. a bank account ("origin") registered and provisioned with 1 credit
-              4. a bank account ("destination") registered
-             */
+            var transferProcessManager = new TransferProcessManager(this.eventStore);
+            this.eventBus.Register(transferProcessManager);
+            var bankAccount = RegisterBankAccount("bankAccountId", eventStore);
+            bankAccount.ProvisionCredit(1);
+            var destinationBankAccount = RegisterBankAccount("bankAccountDestinationId", eventStore);
 
             // When
-            /*
-              when a transfer is requested from "origin" to "destination"
-             */
+            var transferId = bankAccount.RequestTransfer("bankAccountDestinationId", 1);
 
             // Then
-            /*
-             1. Wait for the event bus to process events
-             2. "origin" events should contain exactly 1 BankAccountRegistered, 1 CreditProvisioned, 1 TransferRequested and 1 TransferCompleted
-             3. "destinations" events should contain exactly 1 BankAccountRegistered and 1 TransferReceived
-             */
+            Thread.Sleep(500);
+            
+            var originEvents = eventStore.Load("bankAccountId");
+            Check.That(originEvents).ContainsExactly(new BankAccountRegistered("bankAccountId"),
+                new CreditProvisioned("bankAccountId", 1, 1),
+                new TransferRequested("bankAccountId", "bankAccountDestinationId", transferId, 0, 1),
+                new TransferCompleted("bankAccountId", transferId, "bankAccountDestinationId"));
+            
+            var destinationEvents = eventStore.Load("bankAccountDestinationId");
+            Check.That(destinationEvents).ContainsExactly(new BankAccountRegistered("bankAccountDestinationId"),
+                new TransferReceived("bankAccountDestinationId", transferId, "bankAccountId", 1, 1));
         }
     }
 }

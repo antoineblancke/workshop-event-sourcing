@@ -48,16 +48,16 @@ namespace domain.acceptance_tests
             bankAccountOrigin.ProvisionCredit(1);
 
             // When
-            String transferId = bankAccountOrigin.RequestTransfer("bankAccountDestinationId", 1);
+            var transferId = bankAccountOrigin.RequestTransfer("bankAccountDestinationId", 1);
 
             // Then
             Check.That(transferId).IsNotNull();
 
-            TransferRequested transferRequested = new TransferRequested("bankAccountOriginId",
-                transferId,
+            var transferRequested = new TransferRequested("bankAccountOriginId",
                 "bankAccountDestinationId",
-                1,
-                0);
+                transferId,
+                0,
+                1);
 
             var events = eventStore.Load("bankAccountOriginId");
             Check.That(events).ContainsExactly(new BankAccountRegistered("bankAccountOriginId"),
