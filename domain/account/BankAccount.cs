@@ -32,7 +32,7 @@ namespace domain.account
 
         private int creditBalance;
 
-        private readonly Dictionary<string, TransferRequested> pendingTransfers;
+        private readonly IDictionary<string, TransferRequested> pendingTransfers;
 
         private BankAccount(EventStore eventStore) : this(string.Empty, eventStore, new List<Event>())
         {
@@ -49,7 +49,7 @@ namespace domain.account
         }
 
         public BankAccount(string id, EventStore eventStore, int creditBalance, int aggregateVersion,
-            Dictionary<string, TransferRequested> pendingTransfers)
+            IDictionary<string, TransferRequested> pendingTransfers)
         {
             this.id = id;
             this.eventStore = eventStore;
@@ -69,7 +69,8 @@ namespace domain.account
         /* Decision Function */
         public void ProvisionCredit(int creditToProvision)
         {
-            var creditProvisionedEvent = new CreditProvisioned(this.id, this.creditBalance + creditToProvision, creditToProvision);
+            var creditProvisionedEvent =
+                new CreditProvisioned(this.id, this.creditBalance + creditToProvision, creditToProvision);
             eventStore.Save(this.version, creditProvisionedEvent).ForEach(this.ApplyEvent);
         }
 
@@ -83,7 +84,7 @@ namespace domain.account
             }
 
             eventStore.Save(version, new CreditWithdrawn(id, newCreditBalance, creditToWithdraw))
-                      .ForEach(this.ApplyEvent);
+                .ForEach(this.ApplyEvent);
         }
 
         /* Decision Function */
@@ -101,26 +102,45 @@ namespace domain.account
         }
 
         /* Decision Function */
+        public void ReceiveTransfer(String bankAccountOriginId, String transferId, int creditTransferred)
+        {
+            eventStore.Save(version, new TransferReceived(id,
+                    transferId,
+                    bankAccountOriginId,
+                    creditTransferred,
+                    creditBalance + creditTransferred))
+                .ForEach(this.ApplyEvent);
+        }
+
+        /* Decision Function */
         public void CompleteTransfer(string transferId)
         {
-            throw new NotImplementedException();
-            /*
-              1. throw an InvalidCommandException if the transfer id is absent from the pending transfers map
-              2. instantiate a TransferCompleted event
-              3. save the event List<Event> savedEvents = EventStore.save(events)
-              4. apply saved events on the bank account savedEvents.foreach(this::applyEvent)
-         */
+            TransferRequested transferRequested = pendingTransfers[transferId];
+            if (transferRequested == null) {
+                throw new Exception($"transfer designed by id {transferId} has not been requested or was already completed");
+            }
+
+            eventStore.Save(version, new TransferCompleted(id,
+                    transferId,
+                    transferRequested.BankAccountDestinationId))
+                .ForEach(this.ApplyEvent);
         }
 
         public void CancelTransfer(string transferId)
         {
-            throw new NotImplementedException();
-            /*
-              1. throw an InvalidCommandException if the transfer id is absent from the pending transfers map
-              2. instantiate a TransferCanceled event
-              3. save the event List<Event> savedEvents = EventStore.save(events)
-              4. apply saved events on the bank account savedEvents.foreach(this::applyEvent)
-             */
+            if (!pendingTransfers.ContainsKey(transferId))
+            {
+                throw new Exception(
+                    $"transfer designed by id {transferId} has not been requested or was already completed");
+            }
+
+            TransferRequested transferRequested = pendingTransfers[transferId];
+            eventStore.Save(version, new TransferCanceled(id,
+                    transferId,
+                    transferRequested.BankAccountDestinationId,
+                    transferRequested.CreditTransferred,
+                    creditBalance + transferRequested.CreditTransferred))
+                .ForEach(this.ApplyEvent);
         }
 
         private void ApplyEvent(Event evt)
@@ -154,7 +174,7 @@ namespace domain.account
 
         private class InnerEventListener : IEventListener
         {
-            private BankAccount bankAccount;
+            private readonly BankAccount bankAccount;
 
             public InnerEventListener(BankAccount bankAccount)
             {
@@ -171,10 +191,6 @@ namespace domain.account
             {
                 bankAccount.creditBalance = creditProvisioned.NewCreditBalance;
                 bankAccount.version++;
-                /*
-                  1. affect the event's new credit balance to the bank account's balance
-                  2. increment the aggregate's version
-                 */
             }
 
             public void On(CreditWithdrawn creditWithdrawn)
@@ -195,30 +211,21 @@ namespace domain.account
 
             public void On(TransferReceived transferReceived)
             {
-                throw new NotImplementedException();
-                /*
-                  1. affect the event's new credit balance to the bank account's balance
-                  2. increment the aggregate's version
-                 */
+                bankAccount.creditBalance = transferReceived.NewCreditBalance;
+                bankAccount.version++;
             }
 
             public void On(TransferCompleted transferCompleted)
             {
-                throw new NotImplementedException();
-                /*
-                  1. remove the event from the pending transfers map
-                  2. increment the aggregate's version
-                 */
+                bankAccount.pendingTransfers.Remove(transferCompleted.TransferId);
+                bankAccount.version++;
             }
 
             public void On(TransferCanceled transferCanceled)
             {
-                throw new NotImplementedException();
-                /*
-                  1. affect the event's new credit balance to the bank account's balance
-                  2. remove the event from the pending transfers map
-                  3. increment the aggregate's version
-                 */
+                bankAccount.pendingTransfers.Remove(transferCanceled.TransferId);
+                bankAccount.creditBalance = transferCanceled.NewCreditBalance;
+                bankAccount.version++;
             }
         }
     }
