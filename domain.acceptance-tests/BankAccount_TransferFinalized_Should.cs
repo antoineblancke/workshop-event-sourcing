@@ -37,11 +37,10 @@ namespace domain.acceptance_tests
             // Then
             var events = eventStore.Load("bankAccountOriginId");
             Check.That(events).ContainsExactly(new BankAccountRegistered("bankAccountOriginId"),
-                new TransferRequested("bankAccountOriginId", 
+                new TransferRequested("bankAccountOriginId", transferId,
                     "bankAccountDestinationId",
-                    transferId,
-                    0,
-                    1),
+                    1,
+                    0),
                 new TransferCompleted("bankAccountOriginId",
                     transferId,
                     "bankAccountDestinationId"));

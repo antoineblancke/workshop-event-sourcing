@@ -54,10 +54,10 @@ namespace domain.acceptance_tests
             Check.That(transferId).IsNotNull();
 
             TransferRequested transferRequested = new TransferRequested("bankAccountOriginId",
-                "bankAccountDestinationId",
                 transferId,
-                0,
-                1);
+                "bankAccountDestinationId",
+                1,
+                0);
 
             var events = eventStore.Load("bankAccountOriginId");
             Check.That(events).ContainsExactly(new BankAccountRegistered("bankAccountOriginId"),
