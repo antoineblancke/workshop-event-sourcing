@@ -35,7 +35,7 @@ namespace projection.tests
         public void onCreditProvisioned()
         {
             // When
-            balanceProjectionManager.On(new CreditProvisioned("bankAccountId", 10, 15));
+            balanceProjectionManager.On(new CreditProvisioned("bankAccountId", 15, 10));
 
             // Then
             Check.That(balanceRepository.ReadBalance("bankAccountId")).IsEqualTo(15);
@@ -45,7 +45,7 @@ namespace projection.tests
         public void onCreditWithdrawn()
         {
             // When
-            balanceProjectionManager.On(new CreditWithdrawn("bankAccountId", 10, 15));
+            balanceProjectionManager.On(new CreditWithdrawn("bankAccountId", 15, 10));
 
             // Then
             Check.That(balanceRepository.ReadBalance("bankAccountId")).IsEqualTo(15);
@@ -57,8 +57,8 @@ namespace projection.tests
             // When
             balanceProjectionManager.On(new TransferRequested("bankAccountId", "transferId",
                 "bankAccountDestination",
-                10,
-                15));
+                15, 10
+            ));
 
             // Then
             Check.That(balanceRepository.ReadBalance("bankAccountId")).IsEqualTo(15);
@@ -71,8 +71,8 @@ namespace projection.tests
             balanceProjectionManager.On(new TransferReceived("bankAccountId",
                 "transferId",
                 "bankAccountDestination",
-                10,
-                15));
+                15, 10
+            ));
 
             // Then
             Check.That(balanceRepository.ReadBalance("bankAccountId")).IsEqualTo(15);
@@ -85,8 +85,7 @@ namespace projection.tests
             balanceProjectionManager.On(new TransferCanceled("bankAccountId",
                 "transferId",
                 "bankAccountDestination",
-                10,
-                15));
+                15, 10));
 
             // Then
             Check.That(balanceRepository.ReadBalance("bankAccountId")).IsEqualTo(15);

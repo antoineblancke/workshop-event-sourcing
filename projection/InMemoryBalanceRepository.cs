@@ -9,7 +9,14 @@ namespace projection
         
         public void WriteCreditBalance(string bankAccountId, int credit)
         {
-            balance.Add(bankAccountId, credit);
+            if (balance.ContainsKey(bankAccountId))
+            {
+                balance[bankAccountId] = credit;
+            }
+            else
+            {
+                balance.Add(bankAccountId, credit);   
+            }
         }
 
         public int? ReadBalance(string bankAccountId)

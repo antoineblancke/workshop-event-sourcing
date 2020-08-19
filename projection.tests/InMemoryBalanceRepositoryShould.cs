@@ -19,7 +19,7 @@ namespace projection.tests
         }
         
         [Fact]
-        public void should_write_credit() {
+        public void write_credit() {
             // When
             balanceRepository.WriteCreditBalance("bankAccountId", 10);
 
@@ -28,7 +28,7 @@ namespace projection.tests
         }
 
         [Fact]
-        public void should_update_credit() {
+        public void update_credit() {
             // When
             balanceRepository.WriteCreditBalance("bankAccountId", 10);
 

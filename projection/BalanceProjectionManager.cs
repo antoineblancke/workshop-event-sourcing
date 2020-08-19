@@ -13,37 +13,27 @@ namespace projection
 
         public void On(BankAccountRegistered bankAccountRegistered)
         {
-            /*
-              project the event by using the balance repository
-             */
+            this.balanceRepository.WriteCreditBalance(bankAccountRegistered.AggregateId, 0);
         }
 
         public void On(CreditProvisioned creditProvisioned)
         {
-            /*
-              project the event by using the balance repository
-             */
+            this.balanceRepository.WriteCreditBalance(creditProvisioned.AggregateId, creditProvisioned.NewCreditBalance);
         }
 
         public void On(CreditWithdrawn creditWithdrawn)
         {
-            /*
-              project the event by using the balance repository
-             */
+            this.balanceRepository.WriteCreditBalance(creditWithdrawn.AggregateId, creditWithdrawn.NewCreditBalance);
         }
 
         public void On(TransferRequested transferRequested)
         {
-            /*
-              project the event by using the balance repository
-             */
+            this.balanceRepository.WriteCreditBalance(transferRequested.AggregateId, transferRequested.NewCreditBalance);
         }
 
         public void On(TransferReceived transferReceived)
         {
-            /*
-              project the event by using the balance repository
-             */
+            this.balanceRepository.WriteCreditBalance(transferReceived.AggregateId, transferReceived.NewCreditBalance);
         }
 
         public void On(TransferCompleted transferCompleted)
@@ -55,9 +45,7 @@ namespace projection
 
         public void On(TransferCanceled transferCanceled)
         {
-            /*
-              project the event by using the balance repository
-             */
+            balanceRepository.WriteCreditBalance(transferCanceled.AggregateId, transferCanceled.NewCreditBalance);
         }
     }
 }
