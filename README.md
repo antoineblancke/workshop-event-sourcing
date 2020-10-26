@@ -1,29 +1,34 @@
-**step 1: simple command**
+# Event Sourcing Workshop
 
-```
+## Step 1: simple command
+
+```bash
 git merge --no-edit origin/step1/exercise/simple-command
 ```
 
-We want to implement the 3 basic commands that can be applied on a bank account: registration (creation),  provisioning and withdraw
+We want to implement the 3 basic commands that can be applied on a bank account: registration (creation), provisioning and withdraw
 
-1. implement account registration command
- * write BankAccount_registerBankAccountTest.should_register_bank_account_with_success test and make it pass
- * write BankAccount_registerBankAccountTest.should_fail_registering_bank_account_with_already_used_id and make it pass
-2. implement provisioning command, using BankAccount_provisionCreditTest as a guideline
-3. implement withdraw command, using BankAccount_withdrawCreditTest as a guideline
+1. Implement account registration command
 
+   - Write BankAccount_RegisterBankAccount_Should.Register_Bank_Account_With_Success test and make it pass
+   - Write BankAccount_RegisterBankAccount_Should.Fail_Registering_Bank_Account_With_Already_Used_Id and make it pass
 
-**step 2: long running process**
+2. Implement provisioning command, using BankAccount_ProvisionCredit_Should as a guideline
+3. Implement withdraw command, using BankAccount_WithdrawCredit_Should as a guideline
 
-* if you managed to make all the tests pass:
-```
+## Step 2: long running process
+
+- if you managed to make all the tests pass:
+
+```bash
 git add .
 git commit -m "solution"
 git merge --no-edit origin/step2/exercise/long-running-process
 ```
 
-* if you want to continue from a clean solution
-```
+- if you want to continue from a clean solution:
+
+```bash
 git add .
 git reset --hard origin/master
 git merge --no-edit origin/step1/solution/simple-command
@@ -36,22 +41,24 @@ The process manager dedicated to a transfer is named TransferProcessManager.
 Commands related to this operation are: request transfer, receive transfer, cancel transfer and complete transfer
 All commands have already been implemented except the first one.
 
-1. implement the transfer process manager
- * write TransferProcessManagerTest.should_cancel_transfer_when_destination_does_not_exist test and make it pass
- * write TransferProcessManagerTest.should_complete_transfer_when_destination_exist test and make it pass
+1. implement the transfer process manager:
 
+   - write TransferProcessManagerTest.should_cancel_transfer_when_destination_does_not_exist test and make it pass
+   - write TransferProcessManagerTest.should_complete_transfer_when_destination_exist test and make it pass
 
-**step 3: projection**
+## Step 3: projection
 
-* if you managed to make all the tests pass:
-```
+- if you managed to make all the tests pass:
+
+```bash
 git add .
 git commit -m "solution"
 git merge --no-edit origin/step3/exercise/projection
 ```
 
-* if you want to continue from a clean solution
-```
+- if you want to continue from a clean solution
+
+```bash
 git add .
 git reset --hard origin/master
 git merge --no-edit origin/step2/solution/long-running-process
@@ -64,7 +71,9 @@ For this, we use a in memory repository named InMemoryBalanceRepository (already
 We need to implement the projection manager, BalanceProjectionManager, that will be notified when an event is saved so that it can update the total balances using the repository.
 
 1. implement the credit balance projection manager
- * make the tests defined in BalanceProjectionManagerTest pass
 
+   - make the tests defined in BalanceProjectionManagerTest pass
 
-**step 4 (optional): create a projection of your own**
+## Step 4 (optional): create a projection of your own
+
+It's up to you now!
