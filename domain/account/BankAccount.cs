@@ -7,14 +7,14 @@ namespace domain.account
 {
     public class BankAccount
     {
-        public static BankAccount RegisterBankAccount(string bankAccountId, EventStore eventStore)
+        public static BankAccount RegisterBankAccount(string bankAccountId, IEventStore eventStore)
         {
             BankAccount bankAccount = new BankAccount(eventStore);
             bankAccount.RegisterBankAccount(bankAccountId);
             return bankAccount;
         }
 
-        public static BankAccount LoadBankAccount(string bankAccountId, EventStore eventStore)
+        public static BankAccount LoadBankAccount(string bankAccountId, IEventStore eventStore)
         {
             var events = eventStore.Load(bankAccountId);
             return events.Any() ? new BankAccount(bankAccountId, eventStore, events) : BankAccount.Empty;
@@ -28,27 +28,27 @@ namespace domain.account
 
         private int version;
 
-        private EventStore eventStore;
+        private IEventStore eventStore;
 
         private int creditBalance;
 
         private readonly IDictionary<string, TransferRequested> pendingTransfers;
 
-        private BankAccount(EventStore eventStore) : this(string.Empty, eventStore, new List<Event>())
+        private BankAccount(IEventStore eventStore) : this(string.Empty, eventStore, new List<Event>())
         {
         }
 
-        private BankAccount(string id, EventStore eventStore, List<Event> events) : this(id, eventStore, 0, 0)
+        private BankAccount(string id, IEventStore eventStore, List<Event> events) : this(id, eventStore, 0, 0)
         {
             events.ForEach(this.ApplyEvent);
         }
 
-        public BankAccount(string id, EventStore eventStore, int creditBalance, int aggregateVersion) : this(id,
+        public BankAccount(string id, IEventStore eventStore, int creditBalance, int aggregateVersion) : this(id,
             eventStore, creditBalance, aggregateVersion, new Dictionary<string, TransferRequested>())
         {
         }
 
-        public BankAccount(string id, EventStore eventStore, int creditBalance, int aggregateVersion,
+        public BankAccount(string id, IEventStore eventStore, int creditBalance, int aggregateVersion,
             IDictionary<string, TransferRequested> pendingTransfers)
         {
             this.id = id;

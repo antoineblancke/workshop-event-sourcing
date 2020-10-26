@@ -6,9 +6,9 @@ namespace domain.account
 {
     public class TransferProcessManager : IProcessManager
     {
-        private readonly EventStore eventStore;
+        private readonly IEventStore eventStore;
 
-        public TransferProcessManager(EventStore eventStore)
+        public TransferProcessManager(IEventStore eventStore)
         {
             this.eventStore = eventStore;
         }

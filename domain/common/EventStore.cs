@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace domain.common
 {
-    public abstract class EventStore
+    public abstract class EventStore : IEventStore
     {
         private IEventBus eventBus;
 
@@ -21,15 +21,21 @@ namespace domain.common
             return Load(bankAccountId, 1);
         }
 
-        public void DispatchToEventBus(List<Event> events) {
+        protected void DispatchToEventBus(List<Event> events) {
             eventBus.Push(events);
         }
-        
 
-        public abstract List<Event> Save(int aggregateVersion, List<Event> events);
 
-        public abstract List<Event> Load(string bankAccountId, int fromAggregateVersion);
+        protected abstract List<Event> Save(int aggregateVersion, List<Event> events);
+
+        protected abstract List<Event> Load(string bankAccountId, int fromAggregateVersion);
 
         public abstract void Clear();
+    }
+
+    public interface IEventStore
+    {
+        List<Event> Save(int aggregateVersion, params Event[] events);
+        List<Event> Load(string bankAccountId);
     }
 }

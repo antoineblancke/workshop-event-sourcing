@@ -13,7 +13,7 @@ namespace infrastructure.infrastructure
         {
         }
 
-        public override List<Event> Save(int aggregateVersion, List<Event> events)
+        protected override List<Event> Save(int aggregateVersion, List<Event> events)
         {
             if (!events.Any())
             {
@@ -33,7 +33,7 @@ namespace infrastructure.infrastructure
             return events;
         }
 
-        public override List<Event> Load(string bankAccountId, int fromAggregateVersion)
+        protected override List<Event> Load(string bankAccountId, int fromAggregateVersion)
         {
             return store.GetValueOrDefault(bankAccountId, new List<Event>());
         }
