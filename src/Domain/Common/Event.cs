@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace domain.common
+namespace Domain.Common
 {
     public abstract class Event
     {

@@ -1,7 +1,8 @@
-﻿using domain.common;
-using infrastructure.infrastructure;
+﻿using Domain.Common;
 
-namespace domain.acceptance_tests
+using Infrastructure.Infrastructure;
+
+namespace Domain.AcceptanceTests
 {
     public abstract class AbstractBankAccountTesting
     {
@@ -14,8 +15,9 @@ namespace domain.acceptance_tests
             eventBus = new InMemoryEventBus();
             eventStore = new InMemoryEventStore(eventBus);
         }
-                
-        public void Dispose() {
+
+        public void Dispose()
+        {
             eventStore.Clear();
             eventBus.Clear();
         }

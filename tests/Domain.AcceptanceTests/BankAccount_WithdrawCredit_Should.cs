@@ -1,27 +1,31 @@
 ﻿using System;
-using domain.account;
+
+using Domain.Account;
+
 using NFluent;
-using static domain.account.BankAccount;
+using static Domain.Account.BankAccount;
 using Xunit;
 
-namespace domain.acceptance_tests
+namespace Domain.AcceptanceTests
 {
     public class BankAccount_WithdrawCredit_Should : AbstractBankAccountTesting
     {
         [Fact]
-        public void fail_withdrawing_more_credit_than_provisioned() {
+        public void fail_withdrawing_more_credit_than_provisioned()
+        {
             // Given
             BankAccount bankAccount = RegisterBankAccount("bankAccountId", eventStore);
 
             // When
             Check.ThatCode(() => bankAccount.WithdrawCredit(1)).Throws<Exception>();
-            
+
             var events = eventStore.Load("bankAccountId");
             Check.That(events).ContainsExactly(new BankAccountRegistered("bankAccountId"));
         }
 
         [Fact]
-        public void succeed_withdrawing_less_credit_than_provisioned() {
+        public void succeed_withdrawing_less_credit_than_provisioned()
+        {
             // Given
             BankAccount bankAccount = RegisterBankAccount("bankAccountId", eventStore);
             bankAccount.ProvisionCredit(1);

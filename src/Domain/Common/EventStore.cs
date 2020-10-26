@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace domain.common
+namespace Domain.Common
 {
     public abstract class EventStore
     {
@@ -16,15 +16,16 @@ namespace domain.common
         {
             return Save(aggregateVersion, events.ToList());
         }
-        
-        public List<Event> Load(string bankAccountId) {
+
+        public List<Event> Load(string bankAccountId)
+        {
             return Load(bankAccountId, 1);
         }
 
-        public void DispatchToEventBus(List<Event> events) {
+        public void DispatchToEventBus(List<Event> events)
+        {
             eventBus.Push(events);
         }
-        
 
         public abstract List<Event> Save(int aggregateVersion, List<Event> events);
 

@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
-using domain.common;
 
-namespace infrastructure.infrastructure
+using Domain.Common;
+
+namespace Infrastructure.Infrastructure
 {
     public class InMemoryEventBus : IEventBus
     {
         private readonly List<IEventListener> listeners = new List<IEventListener>();
-        
+
         public void Register(IEventListener eventListener)
         {
             listeners.Add(eventListener);
