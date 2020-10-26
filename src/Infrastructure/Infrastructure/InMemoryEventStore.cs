@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using domain.common;
 
-namespace infrastructure.infrastructure
+using Domain.Common;
+
+namespace Infrastructure.Infrastructure
 {
     public class InMemoryEventStore : EventStore
     {
         private readonly Dictionary<string, List<Event>> store = new Dictionary<string, List<Event>>();
-        
+
         public InMemoryEventStore(IEventBus eventBus) : base(eventBus)
-        {
-        }
+        { }
 
         public override List<Event> Save(int aggregateVersion, List<Event> events)
         {

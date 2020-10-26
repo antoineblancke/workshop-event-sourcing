@@ -1,14 +1,15 @@
 ﻿using System;
-using domain.common;
 
-namespace domain.account
+using Domain.Common;
+
+namespace Domain.Account
 {
     public class TransferCompleted : Event
     {
         public readonly string TransferId;
 
         public readonly string BankAccountDestinationId;
-        
+
         public TransferCompleted(string bankAccountId, string transferId, string bankAccountDestinationId) : base(bankAccountId)
         {
             TransferId = transferId;
@@ -27,10 +28,10 @@ namespace domain.account
 
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((TransferCompleted) obj);
+            if (ReferenceEquals(null, obj))return false;
+            if (ReferenceEquals(this, obj))return true;
+            if (obj.GetType() != this.GetType())return false;
+            return Equals((TransferCompleted)obj);
         }
 
         public override int GetHashCode()

@@ -1,6 +1,6 @@
-﻿using domain.account;
+﻿using Domain.Account;
 
-namespace domain.common
+namespace Domain.Common
 {
     public interface IEventListener
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace domain.common
+namespace Domain.Common
 {
     public interface IEventBus
     {

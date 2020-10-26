@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using domain.common;
 
-namespace domain.account
+using Domain.Common;
+
+namespace Domain.Account
 {
     public class BankAccount
     {
@@ -35,8 +36,7 @@ namespace domain.account
         private readonly Dictionary<string, TransferRequested> pendingTransfers;
 
         private BankAccount(EventStore eventStore) : this(string.Empty, eventStore, new List<Event>())
-        {
-        }
+        { }
 
         private BankAccount(string id, EventStore eventStore, List<Event> events) : this(id, eventStore, 0, 0)
         {
@@ -45,8 +45,7 @@ namespace domain.account
 
         public BankAccount(string id, EventStore eventStore, int creditBalance, int aggregateVersion) : this(id,
             eventStore, creditBalance, aggregateVersion, new Dictionary<string, TransferRequested>())
-        {
-        }
+        { }
 
         public BankAccount(string id, EventStore eventStore, int creditBalance, int aggregateVersion,
             Dictionary<string, TransferRequested> pendingTransfers)
@@ -144,15 +143,15 @@ namespace domain.account
         protected bool Equals(BankAccount other)
         {
             return id == other.id && version == other.version && creditBalance == other.creditBalance &&
-                   pendingTransfers.SequenceEqual(other.pendingTransfers);
+                pendingTransfers.SequenceEqual(other.pendingTransfers);
         }
 
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((BankAccount) obj);
+            if (ReferenceEquals(null, obj))return false;
+            if (ReferenceEquals(this, obj))return true;
+            if (obj.GetType() != this.GetType())return false;
+            return Equals((BankAccount)obj);
         }
 
         public override int GetHashCode()

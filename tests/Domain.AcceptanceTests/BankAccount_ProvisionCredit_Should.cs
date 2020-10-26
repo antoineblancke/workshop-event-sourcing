@@ -1,13 +1,16 @@
-﻿using domain.account;
+﻿using Domain.Account;
+
 using NFluent;
+
 using Xunit;
-using static domain.account.BankAccount;
-namespace domain.acceptance_tests
+using static Domain.Account.BankAccount;
+namespace Domain.AcceptanceTests
 {
     public class BankAccount_ProvisionCredit_Should : AbstractBankAccountTesting
     {
         [Fact]
-        public void provision_credit_with_success() {
+        public void Provision_Credit_With_Success()
+        {
             // Given
             BankAccount bankAccount = RegisterBankAccount("bankAccountId", eventStore);
 

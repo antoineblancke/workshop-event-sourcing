@@ -1,7 +1,8 @@
 ﻿using System;
-using domain.common;
 
-namespace domain.account
+using Domain.Common;
+
+namespace Domain.Account
 {
     public class TransferCanceled : Event
     {
@@ -30,15 +31,15 @@ namespace domain.account
         protected bool Equals(TransferCanceled other)
         {
             return TransferId == other.TransferId && BankAccountIdDestination == other.BankAccountIdDestination &&
-                   NewCreditBalance == other.NewCreditBalance && CreditRefund == other.CreditRefund;
+                NewCreditBalance == other.NewCreditBalance && CreditRefund == other.CreditRefund;
         }
 
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((TransferCanceled) obj);
+            if (ReferenceEquals(null, obj))return false;
+            if (ReferenceEquals(this, obj))return true;
+            if (obj.GetType() != this.GetType())return false;
+            return Equals((TransferCanceled)obj);
         }
 
         public override int GetHashCode()

@@ -1,12 +1,11 @@
-﻿using domain.common;
+﻿using Domain.Common;
 
-namespace domain.account
+namespace Domain.Account
 {
     public class BankAccountRegistered : Event
     {
         public BankAccountRegistered(string bankAccountId) : base(bankAccountId)
-        {
-        }
+        { }
 
         public override void ApplyOn(IEventListener eventListener)
         {
