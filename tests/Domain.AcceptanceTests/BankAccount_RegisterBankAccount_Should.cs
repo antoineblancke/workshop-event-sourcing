@@ -7,7 +7,7 @@ namespace Domain.AcceptanceTests
   public class BankAccount_RegisterBankAccount_Should : AbstractBankAccountTesting
   {
     [Fact]
-    public void register_bank_account_with_success()
+    public void Register_Bank_Account_With_Success()
     {
       throw new NotImplementedException();
       // When
@@ -29,7 +29,7 @@ namespace Domain.AcceptanceTests
     }
 
     [Fact]
-    public void fail_registering_bank_account_with_already_used_id()
+    public void Fail_Registering_Bank_Account_With_Already_Used_Id()
     {
       throw new NotImplementedException();
       // Given

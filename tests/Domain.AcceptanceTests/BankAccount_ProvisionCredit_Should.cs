@@ -9,7 +9,7 @@ namespace Domain.AcceptanceTests
     public class BankAccount_ProvisionCredit_Should : AbstractBankAccountTesting
     {
         [Fact]
-        public void provision_credit_with_success()
+        public void Provision_Credit_With_Success()
         {
             // Given
             BankAccount bankAccount = RegisterBankAccount("bankAccountId", eventStore);

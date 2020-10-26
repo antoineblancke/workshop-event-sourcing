@@ -11,7 +11,7 @@ namespace Domain.AcceptanceTests
     public class BankAccount_WithdrawCredit_Should : AbstractBankAccountTesting
     {
         [Fact]
-        public void fail_withdrawing_more_credit_than_provisioned()
+        public void Fail_Withdrawing_More_Credit_Than_Provisioned()
         {
             // Given
             BankAccount bankAccount = RegisterBankAccount("bankAccountId", eventStore);
@@ -24,7 +24,7 @@ namespace Domain.AcceptanceTests
         }
 
         [Fact]
-        public void succeed_withdrawing_less_credit_than_provisioned()
+        public void Succeed_Withdrawing_Less_Credit_Than_Provisioned()
         {
             // Given
             BankAccount bankAccount = RegisterBankAccount("bankAccountId", eventStore);
